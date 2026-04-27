@@ -1,8 +1,7 @@
 package objektno2.fit.resource;
 
-import jakarta.annotation.security.RolesAllowed;
-import objektno2.fit.model.User;
-import objektno2.fit.service.UserService;
+import objektno2.fit.model.GrupniTrening;
+import objektno2.fit.service.GrupniTreningService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -10,19 +9,18 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 
-@Path("/user")
-public class UserResource {
+@Path("/grupniTrening")
+public class GrupniTreningResource {
 
     @Inject
-    private UserService userService;
+    private GrupniTreningService grupniTreningService;
 
     @POST
-    @RolesAllowed("admin")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/addUser")
-    public Response addUser(User user) {
+    @Path("/add")
+    public Response addGrupniTrening(GrupniTrening grupniTrening) {
         try {
-            userService.createUser(user);
+            grupniTreningService.createGrupniTrening(grupniTrening);
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
@@ -33,31 +31,30 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/getAllUsers")
-    public Response getAllUsers() {
-        List<User> users;
+    @Path("/getAll")
+    public Response getAllGrupniTreninzi() {
         try {
-            users = userService.getAllUsers();
+            List<GrupniTrening> treninzi = grupniTreningService.getAllGrupniTreninzi();
+            return Response.ok(treninzi).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NO_CONTENT)
                     .entity(e.getMessage())
                     .build();
         }
-        return Response.ok(users).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/findByEmail")
-    public Response findByEmail(@QueryParam("email") String email) {
-        if (email == null || email.isEmpty()) {
+    @Path("/findByNaziv")
+    public Response findByNaziv(@QueryParam("naziv") String naziv) {
+        if (naziv == null || naziv.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Email nije proslijeđen")
+                    .entity("Naziv nije proslijeđen")
                     .build();
         }
         try {
-            User user = userService.findByEmail(email);
-            return Response.ok(user).build();
+            List<GrupniTrening> treninzi = grupniTreningService.findByNaziv(naziv);
+            return Response.ok(treninzi).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e.getMessage())

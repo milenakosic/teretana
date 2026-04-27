@@ -1,5 +1,6 @@
 package objektno2.fit.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,49 +18,31 @@ public class User {
     private String prezime;
     private String email;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private UserProfile userProfile;
 
-    @Transient
-    private List<MembershipPlan> membershipPlans = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Membership> memberships = new ArrayList<>();
 
     public User() {}
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getIme() { return ime; }
+    public void setIme(String ime) { this.ime = ime; }
 
-    public String getIme() {
-        return ime;
-    }
+    public String getPrezime() { return prezime; }
+    public void setPrezime(String prezime) { this.prezime = prezime; }
 
-    public void setIme(String ime) {
-        this.ime = ime;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getPrezime() {
-        return prezime;
-    }
+    public UserProfile getUserProfile() { return userProfile; }
+    public void setUserProfile(UserProfile userProfile) { this.userProfile = userProfile; }
 
-    public void setPrezime(String prezime) {
-        this.prezime = prezime;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public List<MembershipPlan> getMembershipPlans() {
-        return membershipPlans;
-    }
-
-    public void setMembershipPlans(List<MembershipPlan> membershipPlans) {
-        this.membershipPlans = membershipPlans;
-    }
+    public List<Membership> getMemberships() { return memberships; }
+    public void setMemberships(List<Membership> memberships) { this.memberships = memberships; }
 }

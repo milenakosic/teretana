@@ -45,4 +45,16 @@ public class UserService {
 
         return users;
     }
+
+    public User findByEmail(String email) {
+        List<User> users = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getResultList();
+
+        if (users.isEmpty()) {
+            throw new RuntimeException("Ne postoji korisnik sa emailom: " + email);
+        }
+
+        return users.get(0);
+    }
 }
