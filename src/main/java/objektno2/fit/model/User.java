@@ -26,6 +26,11 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Membership> memberships = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private List<TimeApi> timeApiResponses = new ArrayList<>();
+
     public User() {}
 
     public Long getId() { return id; }
@@ -39,6 +44,14 @@ public class User {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public List<TimeApi> getTimeApiResponses() {
+        return timeApiResponses;
+    }
+
+    public void setTimeApiResponses(List<TimeApi> timeApiResponses) {
+        this.timeApiResponses = timeApiResponses;
+    }
 
     public UserProfile getUserProfile() { return userProfile; }
     public void setUserProfile(UserProfile userProfile) { this.userProfile = userProfile; }
