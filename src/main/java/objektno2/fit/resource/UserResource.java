@@ -20,7 +20,6 @@ public class UserResource {
     private UserService userService;
 
     @POST
-    @RolesAllowed("admin")
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/addUser")
     public Response addUser(User user) {

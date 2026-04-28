@@ -51,7 +51,7 @@ public class UserService {
 
     @Transactional
     public List<User> getAllUsers() {
-        List<User> users = em.createQuery("SELECT u FROM User u", User.class).getResultList();
+        List<User> users = em.createQuery("FROM User", User.class).getResultList();
 
         if (users.isEmpty()) {
             throw new RuntimeException("Nema korisnika.");
@@ -81,7 +81,7 @@ public class UserService {
     }
 
     @Transactional
-    public User assignTimeZoneByIp(long userId) throws ResourceNotFound{
+    public User assignTimeZoneByIp(Long userId) throws ResourceNotFound{
         User user = getById(userId);
         String ipResponse = ipClient.getIp();
         if(ipResponse == null){
