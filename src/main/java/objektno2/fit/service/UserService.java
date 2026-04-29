@@ -1,6 +1,7 @@
 package objektno2.fit.service;
 
 import objektno2.fit.exeption.ResourceNotFound;
+import objektno2.fit.model.CurrencyResponse;
 import objektno2.fit.model.TimeApi;
 import objektno2.fit.model.User;
 
@@ -8,6 +9,7 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import objektno2.fit.rest.client.CurrencyClient;
 import objektno2.fit.rest.client.IpClient;
 import objektno2.fit.rest.client.TimeApiClient;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -27,6 +29,12 @@ public class UserService {
     @Inject
     @RestClient
     TimeApiClient timeApiClient;
+
+    @Inject
+    @RestClient
+    CurrencyClient currencyClient;
+
+
 
     @Transactional
     public User createUser(User user) {
@@ -94,6 +102,27 @@ public class UserService {
         user.getTimeApiResponses().add(timeApi);
         return em.merge(user);
     }
+
+    @Transactional
+    public User assignCurrencyValue(String from, String to, double value, Long userId) throws ResourceNotFound{
+        User user = getById(userId);
+        CurrencyResponse currencyResponse = currencyClient.getCurenncy(from, to);
+        if(currencyResponse == null){
+            throw new ResourceNotFound("Nije moguce dobiti currency");
+        }
+
+        double convertedValue = value*currencyResponse.getRate();
+        currencyResponse.setValue(value);
+
+        currencyResponse.setConvertedValue(convertedValue);
+        user.getCurrencyResponses().add(currencyResponse);
+        return em.merge(user);
+
+    }
+
+
+
+
 
 
 }

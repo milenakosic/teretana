@@ -81,4 +81,21 @@ public class UserResource {
     }
 
 
+    @GET
+    @Path("/currencyConversion")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response currencyConversion(@QueryParam("from") String from,@QueryParam("to") String to,@QueryParam("value") double value,@QueryParam("userId") Long userId ){
+        try{
+            User user = userService.assignCurrencyValue(from, to, value, userId);
+            return Response.ok(user).build();
+        }
+        catch (ResourceNotFound e){
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+
+
+
+
+
 }
