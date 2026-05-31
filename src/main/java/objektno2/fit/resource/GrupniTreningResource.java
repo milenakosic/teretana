@@ -1,12 +1,16 @@
 package objektno2.fit.resource;
 
-import objektno2.fit.model.GrupniTrening;
-import objektno2.fit.service.GrupniTreningService;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import objektno2.fit.model.GrupniTrening;
+import objektno2.fit.service.GrupniTreningService;
+import objektno2.fit.service.UploadedFileService;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.io.FileInputStream;
 import java.util.List;
 
 @Path("/grupniTrening")
@@ -14,6 +18,9 @@ public class GrupniTreningResource {
 
     @Inject
     private GrupniTreningService grupniTreningService;
+
+    @Inject
+    private UploadedFileService uploadedFileService;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -55,6 +62,37 @@ public class GrupniTreningResource {
         try {
             List<GrupniTrening> treninzi = grupniTreningService.findByNaziv(naziv);
             return Response.ok(treninzi).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Path("/uploadFile")
+    public Response uploadFile(
+            @QueryParam("grupniTreningId") Long grupniTreningId,
+            @QueryParam("fileName") String fileName,
+            @RestForm("file") FileUpload file) {
+        try {
+            FileInputStream fileStream = new FileInputStream(file.uploadedFile().toFile());
+            uploadedFileService.uploadFile(grupniTreningId, fileName, fileStream);
+            return Response.ok("Fajl uspješno uploadovan!").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/getWithFiles/{id}")
+    public Response getTreningWithFiles(@PathParam("id") Long id) {
+        try {
+            return Response.ok(uploadedFileService.getTreningWithFiles(id)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(e.getMessage())
